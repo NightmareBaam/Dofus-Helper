@@ -31,6 +31,12 @@ Comme tous les autres outils non-officiels et respectant les CGU, cet outil est 
 
 ![image alt](https://github.com/Slyss42/Dracoon/blob/46b5f9711967baa45749e804de905726fff89c6a/activer-notification-ig.png)
 
+4. Activer les notifications Windows (Paramètre > Système > Actions et notifications > "activer"
+5. Désactiver "autoriser les notifications à émettre des sons"
+6. Cliquer sur l'application "Dofus 1" pour désactiver l'affichage des bannières. Vous pouvez aussi désactiver le son des notifications de Dofus à cet endroit (si vous préférez avoir le son des autres notifications)
+
+Pensez à 
+
 ---
 
 # Amélioration
@@ -43,6 +49,16 @@ Je suis **ouvert aux retours et aux suggestions d’amélioration** :
 * si le système n'est pas intuitif
 
 N’hésitez pas à **ouvrir une issue ou proposer des améliorations sur twitter @Slyss42**.
+
+---
+# FAQ
+
+**Windows me demande si je fais confiance à le logiciel**
+
+Dracoon permettant de modifier le comportement de votre clavier (touche de raccourcis) il est normal que Windows ajoute une sécurité supplémentaire. Le comportement de Windows est le même sur d'autres outils.
+
+**L'auto-focus ne fonctionne pas**
+Vous pouvez afficher le mode "debug" dans l'onglet d'auto-focus. Ensuite faite un échange entre vos personnages et vérifie si la notification est bien affichée dans les logs. SI ce n'est pas le cas, c'est que les notifications ne sont pas bien activée sur votre ordinateur.
 
 ---
 # Fonctionnement technique de l'auto-focus
@@ -55,33 +71,7 @@ L'auto-focus de Dracoon repose uniquement sur l’analyse des **notifications du
 * Si le texte de la notification est connu de Dracoon ("de joeur" pour les combat, "te propose de faire un échange" pour les échange,...) alors, Dracoon regarde le titre de la notification (correspondant au personnage qui recoit la notification et donc, l'action)
 * Si le compte existe, Dracoon se charge de mettre ce compte au premier plan
 
-
-L’objectif est donc d’avoir un outil **simple, automatisé et respectueux des CGU**.
-
 ---
-
-# Amélioration
-
-Je suis **ouvert aux retours et aux suggestions d’amélioration** :
-
-* si certaines fonctionnalités ne fonctionnent pas correctement
-* si le système n’est pas assez rapide
-* si vous avez des idées d’amélioration
-* si le système n'est pas intuitif
-
-N’hésitez pas à **ouvrir une issue ou proposer des améliorations sur twitter @Slyss42**.
-
----
-
-# FAQ
-
-**Windows me demande si je fais confiance à le logiciel**
-Dracoon permettant de modifier le comportement de votre clavier (touche de raccourcis) il est normal que Windows ajoute une sécurité supplémentaire. Le comportement de Windows est le même sur d'autres outils.
-
-**L'auto-focus ne fonctionne pas**
-
----
-
 # Rappel concernant ce genre d'outils
 
 Petit rappel de la part d'Ankama concernant les règles fixée autour des outils fan-made :
