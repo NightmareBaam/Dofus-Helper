@@ -6,7 +6,7 @@ Le programme **intègre les fonctionnalités déjà connues** par une grande par
 
 Vidéo de présentation :
 
-[![Vidéo de présentation](xxx)](https://youtu.be/6R7pPM_5euM)
+[![Vidéo de présentation](https://github.com/Slyss42/Dracoon/blob/fd2ad522809b8398c359805ac353bc745ef0a1d7/miniature-pr%C3%A9sentation.png)](https://youtu.be/6R7pPM_5euM)
 
 ---
 
