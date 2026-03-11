@@ -1,10 +1,8 @@
 # Présentation
 
-Dracoon est un outil développé 100% par l'IA en **Python**. Cet outil pour but de faciliter et automatiser la gestion des fenetres de Dofus Rétro en monocompte et en multicompte, tout en restant respectueux des CGU.
+Dracoon est un outil ayant pour but de faciliter et automatiser la gestion des fenetres de Dofus Rétro en monocompte et en multicompte, tout en restant respectueux des CGU.
 
 Le programme **intègre les fonctionnalités déjà connues** par une grande partie de joueur (tri des comptes selon l'ordre d'initiative, compte suivant/précédent via une touche...) et **ajoute un système d’Auto-Focus**.
-
-Comme tous les autres outils non-officiels et respectant les CGU, cet outil est toléré par Ankama.
 
 ---
 
@@ -21,7 +19,7 @@ Comme tous les autres outils non-officiels et respectant les CGU, cet outil est 
 * lorsque l’ordre d’initiative change régulièrement
 * éviter de devoir réorganiser les fenêtres manuellement
 
-**Mais aussi...**
+**Mais aussi**
 * Pour les personnes en situation de handicap
 ---
 
@@ -31,7 +29,7 @@ Comme tous les autres outils non-officiels et respectant les CGU, cet outil est 
 2. Lancer le fichier `.exe`.
 3. Activer les notifications sur vos comptes Dofus (option en jeu > général > notification en arrière plan)
 
-![image alt](https://github.com/Slyss42/Dracoon/blob/46b5f9711967baa45749e804de905726fff89c6a/activer-notification-ig.png)
+!(https://github.com/Slyss42/Dracoon/blob/46b5f9711967baa45749e804de905726fff89c6a/activer-notification-ig.png)
 
 4. Activer les notifications Windows (Paramètre > Système > Actions et notifications > "activer"
 5. Désactiver "autoriser les notifications à émettre des sons" (ou le faire spécifiquement pour Dofus si vous voulez garder le son pour les autres applications)
@@ -45,6 +43,10 @@ Comme tous les autres outils non-officiels et respectant les CGU, cet outil est 
 ---
 
 # FAQ
+
+* **En quel langage est écrit Dracoon ? Comment as-tu fais le lodiciel ?**
+
+Tout est développé en Python et réalisé grâce à l'IA.
 
 * **Windows me demande si je fais confiance à le logiciel**
 
