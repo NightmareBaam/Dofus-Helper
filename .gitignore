@@ -1,0 +1,8 @@
+codex/
+**Codex**
+build/
+dist/
+**__pycache__**
+**.md
+!README.md
+__init__.py

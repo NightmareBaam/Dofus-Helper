@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dofus Helper</title>
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <div id="app" class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img id="brand-logo" class="brand-logo" alt="Dofus Helper">
+      </div>
+      <nav class="nav">
+        <button class="nav-link is-active" data-view="characters">Personnages</button>
+        <button class="nav-link" data-view="shortcuts">Raccourcis</button>
+        <button class="nav-link" data-view="links">Liens utiles</button>
+        <button class="nav-link" data-view="info">Info</button>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="header">
+        <div>
+          <h2 id="view-title">Personnages</h2>
+          <p id="view-subtitle">Gestion des fenetres Dofus et regles AutoFocus par personnage.</p>
+        </div>
+        <div class="header-actions">
+          <div id="status-pill" class="status-pill">Initialisation...</div>
+          <button id="add-link-group-btn" class="primary-btn header-link-btn hidden">Nouveau dossier</button>
+        </div>
+      </header>
+
+      <section class="view is-active" data-view="characters">
+        <div class="toolbar">
+          <button id="refresh-btn" class="primary-btn">Actualiser</button>
+          <label class="toggle"><input id="retro-toggle" type="checkbox"> <span>Retro</span></label>
+          <label class="toggle"><input id="unity-toggle" type="checkbox"> <span>Unity</span></label>
+        </div>
+        <div id="characters-list" class="characters-list"></div>
+      </section>
+
+      <section class="view" data-view="shortcuts">
+        <div class="panel shortcut-panel">
+          <div class="panel-head links-panel-head">
+            <div>
+              <h3>Raccourcis globaux</h3>
+              <p>Capture clavier et souris directement dans l'interface webview, en gardant les hooks Python existants.</p>
+            </div>
+            <button id="apply-shortcuts-btn" class="primary-btn">Appliquer</button>
+          </div>
+          <div class="hint-box">Exemples : <code>ctrl+right</code>, <code>ctrl+left</code>, <code>mouse:middle</code>, <code>ctrl+mouse:x1</code>.</div>
+          <div id="shortcut-rows" class="shortcut-rows"></div>
+          <div class="shortcut-footer">
+            <label class="toggle debug-toggle"><input id="shortcuts-debug-toggle" type="checkbox"> <span>Mode debug entrees globales</span></label>
+            <div id="shortcuts-status" class="inline-status tone-muted"></div>
+          </div>
+          <div id="shortcut-debug-card" class="log-card hidden">
+            <div class="panel-head panel-head-compact">
+              <h4>Journal debug</h4>
+              <button id="clear-shortcuts-log-btn" class="ghost-btn ghost-btn-small">Vider</button>
+            </div>
+            <div id="shortcut-debug-log" class="log-panel"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="links">
+        <div class="links-panel">
+          <div id="links-groups" class="links-stack"></div>
+        </div>
+      </section>
+
+      <section class="view" data-view="info">
+        <div class="panel info-panel">
+          <h3>Application</h3>
+          <div id="info-version" class="info-line"></div>
+          <pre id="legal-text" class="legal"></pre>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
+

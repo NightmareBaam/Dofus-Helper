@@ -1,0 +1,141 @@
+﻿# Dofus Helper
+
+Dofus Helper est un outil Windows destiné à faciliter la gestion des fenêtres de Dofus Retro et Dofus Unity, en monocompte comme en multicompte, tout en restant dans l'esprit des règles d'utilisation tolérées pour les outils fan-made.
+
+Ce projet est un fork de Dracoon : [GitHub](https://github.com/Slyss42/Dracoon), [Twitter / X](https://x.com/Slyss42).
+
+L'application reprend les fonctionnalités déjà connues par une partie des joueurs, comme le tri des comptes selon l'ordre d'initiative ou le passage au compte suivant/précédent via un raccourci, et ajoute notamment un système d'auto-focus.
+
+## Présentation vidéo
+
+[![Vidéo de présentation](https://github.com/Slyss42/Dracoon/blob/fd2ad522809b8398c359805ac353bc745ef0a1d7/miniature-pr%C3%A9sentation.png)](https://youtu.be/6R7pPM_5euM)
+
+---
+
+## Cas d'utilisation
+
+### Monocompte
+
+- Jouer sur un seul compte tout en faisant autre chose à côté.
+- L'application peut remettre automatiquement la bonne fenêtre au premier plan quand une notification importante apparaît.
+
+### Multicompte
+
+- Gérer plus facilement les échanges entre comptes.
+- Créer et suivre des groupes de personnages.
+- Naviguer rapidement entre les personnages.
+- Suivre les changements d'ordre d'initiative.
+- Éviter de réorganiser les fenêtres manuellement en permanence.
+
+### Autres usages
+
+- Aider les joueurs ayant besoin d'une navigation plus confortable ou plus accessible.
+
+---
+
+## Fonctionnalités
+
+### Personnages
+
+![Vue personnages](assets/readme/personnages.png)
+
+#### Actualiser
+
+Le bouton `Actualiser` permet de rafraîchir l'application pour détecter les fenêtres Dofus ouvertes.
+
+#### Filtres Retro et Unity
+
+Les cases à cocher permettent d'activer ou de désactiver séparément la prise en charge de Dofus Retro et de Dofus Unity.
+
+#### Ordre des personnages
+
+Les personnages peuvent être réordonnés par glisser-déposer pour définir l'ordre de parcours des fenêtres.
+
+#### Actions par personnage
+
+Pour chaque personnage, il est possible de :
+
+- forcer le focus sur sa fenêtre avec le bouton `Focus`
+- activer ou désactiver l'auto-focus selon le type de notification : combat, échange, groupe ou message privé. Cela ne fonctionne que pour Dofus Retro ou Dofus Unity dans le cas ou il n'y a qu'une fenêtre active.
+
+### Raccourcis
+
+![Vue raccourcis](assets/readme/raccourcis.png)
+
+L'onglet `Raccourcis` permet de capturer puis d'appliquer des raccourcis personnalisés.
+
+L'application supporte :
+
+- les combinaisons clavier
+- les boutons de souris
+
+### Liens utiles
+
+![Vue liens utiles](assets/readme/liens_utiles.png)
+
+Cet onglet permet de :
+
+- créer des dossiers de liens
+- ajouter, modifier et supprimer des liens
+- masquer le contenu d'un dossier en ne gardant que son en-tête
+- réordonner les liens et les dossiers par glisser-déposer
+
+Par défaut, l'application inclut déjà quelques liens utiles pour Dofus Unity et Dofus Retro.
+
+---
+
+## Installation
+
+1. Téléchargez `DofusHelper-Setup.exe`.
+2. Activez les notifications sur vos comptes Dofus : `Options en jeu > Général > Notifications en arrière-plan`.
+   Capture : [activer les notifications en jeu](https://github.com/Slyss42/Dracoon/blob/46b5f9711967baa45749e804de905726fff89c6a/activer-notification-ig.png)
+3. Activez les notifications Windows : `Paramètres > Système > Actions et notifications`.
+4. Désactivez l'option autorisant les notifications à émettre des sons, ou faites-le uniquement pour Dofus si vous souhaitez conserver le son pour les autres applications.
+   Capture : [réglage Windows 1](https://github.com/Slyss42/Dracoon/blob/7fae9b3246307ed8bc5035d0d623450cbc735c73/activer-notification-windows1.png)
+5. Ouvrez l'application `Dofus 1` dans les paramètres de notifications Windows pour désactiver les bannières si besoin. Vous pouvez aussi y désactiver uniquement le son des notifications Dofus.
+   Capture : [réglage Windows 2](https://github.com/Slyss42/Dracoon/blob/ce4e21739dc6cbe9c16bf4d05bd57da43d9ef453/activer-notification-windows2.png)
+
+---
+
+## FAQ
+
+### En quel langage est écrit Dofus Helper ?
+
+Le projet est développé en Python, avec une partie de l'interface en webview.
+
+### Pourquoi Windows demande-t-il une confirmation de sécurité ?
+
+Comme l'application interagit avec les fenêtres et les raccourcis globaux, Windows peut afficher des avertissements supplémentaires. C'est un comportement normal pour ce type d'outil.
+
+### L'auto-focus ne fonctionne pas
+
+Vous pouvez activer le mode debug dans l'interface, puis déclencher une notification en jeu pour vérifier si elle apparaît dans les logs. Si ce n'est pas le cas, le problème vient généralement de la configuration des notifications Windows ou de Dofus.
+
+### Ce programme est-il autorisé par Ankama ?
+
+Rappel des règles communiquées autour des outils fan-made : l'utilisation d'un logiciel tiers est tolérée tant qu'il ne modifie pas le jeu ni ses fichiers, mais Ankama ne garantit ni sa sécurité ni son support. Les macros et outils assimilés restent interdits.
+
+---
+
+## Développement
+
+### Pré-requis
+
+- [Python](https://www.python.org/downloads/)
+- [Inno Setup](https://jrsoftware.org/isdl.php)
+
+### Lancer l'application en mode développement
+
+```powershell
+python DofusHelper_main.py
+```
+
+### Générer un installateur
+
+Lancez le script suivant :
+
+```powershell
+.\build.ps1
+```
+
+Le script génère un nouvel installateur `DofusHelper-Setup.exe` qu'il suffit ensuite d'exécuter pour réinstaller l'application.
