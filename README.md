@@ -1,12 +1,16 @@
 ﻿# Dofus Helper
 
-Dofus Helper est un outil Windows destiné à faciliter la gestion des fenêtres de Dofus Retro et Dofus Unity, en monocompte comme en multicompte, tout en restant dans l'esprit des règles d'utilisation tolérées pour les outils fan-made.
+Dofus Helper est une application à destination de joueur de **Dofus Monocompte ou Multicompte** et ce **quelque soit la version du jeu** !
 
 Ce projet est un fork de Dracoon : [GitHub](https://github.com/Slyss42/Dracoon), [Twitter / X](https://x.com/Slyss42).
 
-L'application reprend les fonctionnalités déjà connues par une partie des joueurs, comme le tri des comptes selon l'ordre d'initiative ou le passage au compte suivant/précédent via un raccourci, et ajoute notamment un système d'auto-focus.
+L'application comprends les fonctionnalités suivantes :
+
+Détection des fenêtres de jeu. Switch de fenêtre avec support raccourcis clavier et souris (pour le multi-compte), focus en cas de notification (Dofus Retro et Monocompte unity). Et possibilité de se créer une banque de lien utiles, accessibles rapidement et regroupable par dossier.
 
 ## Présentation vidéo
+
+Ci-joint une vidéo de présentation de l'outil [Dracoon](https://github.com/Slyss42/Dracoon) qui est la base de Dofus Helper.
 
 [![Vidéo de présentation](https://github.com/Slyss42/Dracoon/blob/fd2ad522809b8398c359805ac353bc745ef0a1d7/miniature-pr%C3%A9sentation.png)](https://youtu.be/6R7pPM_5euM)
 
@@ -47,6 +51,10 @@ Le bouton `Actualiser` permet de rafraîchir l'application pour détecter les fe
 
 Les cases à cocher permettent d'activer ou de désactiver séparément la prise en charge de Dofus Retro et de Dofus Unity.
 
+#### Copie MP
+
+Extrait le Pseudo de la personne qui a envoyé un MP et ajoute dans le presse papiers "/w Pseudo" pour répondre rapidement à la personne.
+
 #### Ordre des personnages
 
 Les personnages peuvent être réordonnés par glisser-déposer pour définir l'ordre de parcours des fenêtres.
@@ -86,7 +94,7 @@ Par défaut, l'application inclut déjà quelques liens utiles pour Dofus Unity 
 
 ## Installation
 
-1. Téléchargez `DofusHelper-Setup.exe`.
+1. Téléchargez et lancer `DofusHelper-Setup.exe`.
 2. Activez les notifications sur vos comptes Dofus : `Options en jeu > Général > Notifications en arrière-plan`.
    Capture : [activer les notifications en jeu](https://github.com/Slyss42/Dracoon/blob/46b5f9711967baa45749e804de905726fff89c6a/activer-notification-ig.png)
 3. Activez les notifications Windows : `Paramètres > Système > Actions et notifications`.

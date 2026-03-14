@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from src.ui.controller.controller import WebviewController
 
@@ -30,6 +30,9 @@ class WebviewApi:
 
     def set_game_filter(self, game_type: str, enabled: bool) -> dict[str, object]:
         return self.controller.set_game_filter(game_type, enabled)
+
+    def set_copy_mp_sender(self, enabled: bool) -> dict[str, object]:
+        return self.controller.set_copy_mp_sender(enabled)
 
     def set_character_rule(self, pseudo: str, notif_type: str, enabled: bool) -> dict[str, object]:
         return self.controller.set_character_rule(pseudo, notif_type, enabled)
@@ -90,4 +93,5 @@ class WebviewApi:
 
     def shutdown(self) -> None:
         self.controller.shutdown()
+
 

@@ -1,10 +1,11 @@
-import json
+﻿import json
 from dataclasses import dataclass, field
 from typing import Literal, Mapping
 from uuid import uuid4
 
 from src.domain.constants import (
     AUTOFOCUS_TYPES,
+    DEFAULT_COPY_MP_SENDER,
     DEFAULT_ENABLE_RETRO,
     DEFAULT_ENABLE_UNITY,
     DEFAULT_SHORTCUT_LAST,
@@ -153,6 +154,7 @@ class AppConfig:
     shortcut_last: str | None = DEFAULT_SHORTCUT_LAST
     enable_retro: bool = DEFAULT_ENABLE_RETRO
     enable_unity: bool = DEFAULT_ENABLE_UNITY
+    copy_mp_sender: bool = DEFAULT_COPY_MP_SENDER
     autofocus_rules: dict[str, dict[str, bool]] = field(default_factory=dict)
     link_groups: list[dict[str, object]] = field(default_factory=default_link_groups)
 
@@ -173,6 +175,7 @@ class AppConfig:
             ),
             enable_retro=_parse_bool(data.get("enable_retro"), DEFAULT_ENABLE_RETRO),
             enable_unity=_parse_bool(data.get("enable_unity"), DEFAULT_ENABLE_UNITY),
+            copy_mp_sender=_parse_bool(data.get("copy_mp_sender"), DEFAULT_COPY_MP_SENDER),
             autofocus_rules=_parse_autofocus_rules(data.get("autofocus_rules")),
             link_groups=_parse_link_groups(data.get("link_groups")),
         )
@@ -184,6 +187,7 @@ class AppConfig:
             "shortcut_last": "" if self.shortcut_last is None else self.shortcut_last,
             "enable_retro": "true" if self.enable_retro else "false",
             "enable_unity": "true" if self.enable_unity else "false",
+            "copy_mp_sender": "true" if self.copy_mp_sender else "false",
             "autofocus_rules": json.dumps(self.autofocus_rules, ensure_ascii=True),
             "link_groups": json.dumps(self.link_groups, ensure_ascii=True),
         }
@@ -197,3 +201,4 @@ class AppConfig:
         for notif_type in AUTOFOCUS_TYPES:
             rule.setdefault(notif_type, True)
         return rule
+

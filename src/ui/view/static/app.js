@@ -1,4 +1,4 @@
-const state = {
+﻿const state = {
   bootstrap: null,
   windows: [],
   dirtyOrder: null,
@@ -23,6 +23,13 @@ const shortcutMeta = {
   next: ['Fenetre suivante', 'Passe au personnage suivant.'],
   prev: ['Fenetre precedente', 'Revient au personnage precedent.'],
   last: ['Dernier focus', 'Revient sur la derniere fenetre Dofus active.'],
+};
+
+const autofocusMeta = {
+  combat: 'Active le focus automatique quand c\'est au tour de ce personnage.',
+  echange: 'Active le focus automatique quand ce personnage recoit une proposition d\'echange.',
+  groupe: 'Active le focus automatique quand ce personnage recoit une invitation de groupe.',
+  mp: 'Active le focus automatique quand ce personnage recoit un message prive.',
 };
 
 async function main() {
@@ -53,6 +60,7 @@ function bindToolbar() {
   document.getElementById('refresh-btn').addEventListener('click', refreshCharacters);
   document.getElementById('retro-toggle').addEventListener('change', (event) => setFilter('retro', event.target.checked));
   document.getElementById('unity-toggle').addEventListener('change', (event) => setFilter('unity', event.target.checked));
+  document.getElementById('copy-mp-toggle').addEventListener('change', (event) => setCopyMpSender(event.target.checked));
 
   document.getElementById('apply-shortcuts-btn').addEventListener('click', applyShortcuts);
   document.getElementById('shortcuts-debug-toggle').addEventListener('change', async (event) => {
@@ -102,6 +110,7 @@ function hydrateStaticViews(bootstrap) {
   document.getElementById('brand-logo').src = bootstrap.assets.logo;
   document.getElementById('retro-toggle').checked = bootstrap.config.enableRetro;
   document.getElementById('unity-toggle').checked = bootstrap.config.enableUnity;
+  document.getElementById('copy-mp-toggle').checked = !!bootstrap.config.copyMpSender;
   document.getElementById('info-version').textContent = `Version: ${bootstrap.version}`;
   document.getElementById('legal-text').textContent = bootstrap.legal;
 }
@@ -151,7 +160,7 @@ function renderCharacters() {
         <div class="character-mode ${modeClass}">${character.gameType.toUpperCase()}</div>
       </div>
       <div class="character-actions">
-        <button class="focus-btn" data-hwnd="${character.hwnd}">Focus</button>
+        <button class="focus-btn" data-hwnd="${character.hwnd}" title="Place cette fenetre au premier plan.">Focus</button>
       </div>
     `;
 
@@ -163,11 +172,15 @@ function renderCharacters() {
         button.className = 'icon-btn';
         button.dataset.type = notifType;
         const enabled = character.rule[notifType] !== false;
+        button.title = getAutofocusTooltip(notifType, enabled);
+        button.setAttribute('aria-label', getAutofocusTooltip(notifType, enabled));
         button.innerHTML = `<img alt="${notifType}" src="${state.bootstrap.assets.autofocus[notifType][enabled ? 'on' : 'off']}">`;
         button.addEventListener('click', async () => {
           const next = !(character.rule[notifType] !== false);
           character.rule[notifType] = next;
           button.querySelector('img').src = state.bootstrap.assets.autofocus[notifType][next ? 'on' : 'off'];
+          button.title = getAutofocusTooltip(notifType, next);
+          button.setAttribute('aria-label', getAutofocusTooltip(notifType, next));
           await window.pywebview.api.set_character_rule(character.pseudo, notifType, next);
         });
         actions.appendChild(button);
@@ -196,9 +209,9 @@ function renderShortcutsRows() {
         <div class="shortcut-subtitle">${subtitle}</div>
       </div>
       <div class="shortcut-actions">
-        <input class="shortcut-input" readonly value="${formatShortcutValue(action, activeCapture)}">
-        <button class="capture-btn" data-action="${action}">${activeCapture ? 'Ecoute...' : 'Capturer'}</button>
-        <button class="clear-btn" data-action="${action}">Aucun</button>
+        <input class="shortcut-input" readonly value="${formatShortcutValue(action, activeCapture)}" title="Raccourci actuellement configure pour cette action.">
+        <button class="capture-btn" data-action="${action}" title="Ecoute la prochaine combinaison clavier ou souris pour cette action.">${activeCapture ? 'Ecoute...' : 'Capturer'}</button>
+        <button class="clear-btn" data-action="${action}" title="Supprime le raccourci actuellement configure.">Aucun</button>
       </div>
     `;
     row.querySelector('.capture-btn').addEventListener('click', () => {
@@ -239,17 +252,17 @@ function renderLinks() {
     card.innerHTML = `
       <div class="link-folder-head">
         <div class="link-folder-title">
-          <span class="drag-handle" aria-hidden="true">:::</span>
+          <span class="drag-handle" aria-hidden="true" title="Glissez-deposez pour reordonner.">:::</span>
           <div>
             <h4>${escapeHtml(group.name)}</h4>
             <div class="link-folder-meta">${group.links.length} lien${group.links.length > 1 ? 's' : ''}</div>
           </div>
         </div>
         <div class="link-folder-actions">
-          ${renderIconButton('toggle-collapse', group.collapsed ? 'Afficher les liens' : 'Masquer les liens', 'visibility-btn', group.collapsed ? 'eye-off' : 'eye')}
-          <button class="ghost-btn ghost-btn-small" data-action="add-link">Ajouter</button>
-          ${renderIconButton('rename', 'Renommer')}
-          ${renderIconButton('delete', 'Supprimer', 'danger-btn')}
+          ${renderIconButton('toggle-collapse', group.collapsed ? 'Affiche les liens de ce dossier.' : 'Masque les liens de ce dossier.', 'visibility-btn', group.collapsed ? 'eye-off' : 'eye')}
+          <button class="ghost-btn ghost-btn-small" data-action="add-link" title="Ajoute un nouveau lien dans ce dossier.">Ajouter</button>
+          ${renderIconButton('rename', 'Renomme ce dossier.')}
+          ${renderIconButton('delete', 'Supprime ce dossier et tous ses liens.', 'danger-btn')}
         </div>
       </div>
       <div class="link-list"></div>
@@ -276,15 +289,15 @@ function renderLinks() {
         row.dataset.linkId = link.id;
         row.innerHTML = `
           <div class="link-row-main">
-            <span class="drag-handle" aria-hidden="true">:::</span>
-            <button class="link-open" type="button" title="${escapeHtml(link.url)}">
+            <span class="drag-handle" aria-hidden="true" title="Glissez-deposez pour reordonner.">:::</span>
+            <button class="link-open" type="button" title="Ouvre ce lien dans le navigateur. ${escapeHtml(link.url)}">
               <span class="link-label">${escapeHtml(link.label)}</span>
               <span class="link-url">${escapeHtml(link.url)}</span>
             </button>
           </div>
           <div class="link-row-actions">
-            ${renderIconButton('edit', 'Modifier')}
-            ${renderIconButton('delete', 'Supprimer', 'danger-btn')}
+            ${renderIconButton('edit', 'Modifie ce lien.')}
+            ${renderIconButton('delete', 'Supprime ce lien.', 'danger-btn')}
           </div>
         `;
         bindLinkRowDrag(row, group.id);
@@ -404,6 +417,12 @@ async function setFilter(gameType, enabled) {
   state.dirtyOrder = null;
   renderCharacters();
   updateStatus(`Filtre ${gameType} mis a jour`);
+}
+
+async function setCopyMpSender(enabled) {
+  const payload = await window.pywebview.api.set_copy_mp_sender(enabled);
+  state.bootstrap.config = payload.config;
+  updateStatus(`Copie MP ${enabled ? 'activee' : 'desactivee'}`);
 }
 
 async function applyShortcuts() {
@@ -673,6 +692,11 @@ function renderIcon(action) {
   return icons[action] || '';
 }
 
+
+function getAutofocusTooltip(notifType, enabled) {
+  const description = autofocusMeta[notifType] || 'Option de focus automatique pour ce type de notification.';
+  return `${description} Etat actuel : ${enabled ? 'active' : 'desactive'}.`;
+}
 function updateStatus(message) {
   document.getElementById('status-pill').textContent = message;
 }
@@ -687,3 +711,7 @@ function escapeHtml(value) {
 }
 
 window.addEventListener('pywebviewready', main);
+
+
+
+

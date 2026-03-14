@@ -17,7 +17,7 @@ APP_LEGAL = (
     "charge du joueur. Enfin, il est important de noter que les outils de type macros ou "
     "automatisation restent strictement interdits.\n"
     "Ce projet est un fork de : https://github.com/Slyss42/Dracoon. "
-    "Il consiste à ajouter le support Dofus Unity et la possibilité d'utiliser les boutons de la souris et autres fonctionnalités."
+    "Il consiste Ã  ajouter le support Dofus Unity et la possibilitÃ© d'utiliser les boutons de la souris et autres fonctionnalitÃ©s."
 )
 
 
@@ -40,6 +40,7 @@ DEFAULT_SHORTCUT_PREV = "ctrl+left"
 DEFAULT_SHORTCUT_LAST = "ctrl+down"
 DEFAULT_ENABLE_RETRO = True
 DEFAULT_ENABLE_UNITY = True
+DEFAULT_COPY_MP_SENDER = True
 
 FOCUS_POLL_INTERVAL = 0.15
 AUTOFOCUS_POLL_INTERVAL = 0.3

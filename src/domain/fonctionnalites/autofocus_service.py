@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import re
 import threading
 from collections.abc import Callable
@@ -12,10 +12,13 @@ NOTIFICATION_PATTERNS = [
     ("combat", ("de jouer",), "combat"),
     ("echange", ("te propose de faire un echange",), "echange"),
     ("groupe", ("t'invite", "rejoindre son groupe"), "groupe"),
-    ("mp", ("de ", "(prive)", "(privÃ©)"), "mp"),
+    ("mp", ("de ", "(prive)"), "mp"),
 ]
 
-MP_SENDER_PATTERN = re.compile(r"^\s*de\s+(?P<sender>[^:]+?)\s*:", re.IGNORECASE)
+MP_SENDER_PATTERN = re.compile(
+    r"^\s*(?:de\s+|\((?:prive|priv\u00e9)\)\s+)(?P<sender>[^:]+?)\s*:",
+    re.IGNORECASE,
+)
 UNITY_NOTIFICATION_TITLE_PATTERN = re.compile(r"^dofus\s+3(?:\.\d+)*$", re.IGNORECASE)
 
 
@@ -64,6 +67,7 @@ class AutoFocusService:
         }
         self._filters_getter: Callable[[], tuple[bool, bool]] = lambda: (True, True)
         self._character_rule_getter: Callable[[str, str], bool] = lambda _pseudo, _notif_type: True
+        self._mp_clipboard_enabled_getter: Callable[[], bool] = lambda: True
 
     @property
     def available(self) -> bool:
@@ -78,6 +82,9 @@ class AutoFocusService:
 
     def set_character_rule_getter(self, getter: Callable[[str, str], bool]) -> None:
         self._character_rule_getter = getter
+
+    def set_mp_clipboard_enabled_getter(self, getter: Callable[[], bool]) -> None:
+        self._mp_clipboard_enabled_getter = getter
 
     def set_debug(self, enabled: bool) -> None:
         self._debug_enabled = enabled
@@ -202,10 +209,19 @@ class AutoFocusService:
         if notif_type is None:
             return
 
+        if notif_type == "mp" and self._mp_clipboard_enabled_getter():
+            sender = self._extract_mp_sender(body)
+            if sender:
+                whisper = f"/w {sender} "
+                if copy_text_to_clipboard(whisper):
+                    self._log_fn(f"  Presse-papiers -> {whisper}", "ok")
+                else:
+                    self._log_fn("  Echec copie presse-papiers MP.", "warn")
+
         pseudo = extract_pseudo_from_title(title)
         unity_fallback = pseudo is None and self._is_unity_notification_title(title)
         if unity_fallback and self._window_service.count_game_windows("unity") > 1:
-            self._log_fn("[unity] ignore (plusieurs fenetres Unity ouvertes)", "dim")
+            self._log_fn("[unity] ignore focus (plusieurs fenetres Unity ouvertes)", "dim")
             return
         if pseudo is None and not unity_fallback:
             return
@@ -224,15 +240,6 @@ class AutoFocusService:
         self._stats["last"] = target_label
         self._stats_fn(dict(self._stats))
         self._log_fn(f"[{notif_type.upper()}] {target_label} -> {body}", f"type_{notif_type}")
-
-        if notif_type == "mp":
-            sender = self._extract_mp_sender(body)
-            if sender:
-                whisper = f"/w {sender} "
-                if copy_text_to_clipboard(whisper):
-                    self._log_fn(f"  Presse-papiers -> {whisper}", "ok")
-                else:
-                    self._log_fn("  Echec copie presse-papiers MP.", "warn")
 
         enable_retro, enable_unity = self._filters_getter()
         if pseudo:
@@ -267,10 +274,10 @@ class AutoFocusService:
                 return key
         return None
 
-
     @staticmethod
     def _is_unity_notification_title(title: str) -> bool:
         return UNITY_NOTIFICATION_TITLE_PATTERN.fullmatch(title.strip()) is not None
+
     @staticmethod
     def _extract_mp_sender(body: str) -> str | None:
         match = MP_SENDER_PATTERN.match(body.strip())

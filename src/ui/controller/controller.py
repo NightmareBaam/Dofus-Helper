@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import threading
 import webbrowser
@@ -31,6 +31,7 @@ class WebviewController:
         )
         self.autofocus_service.set_filters_getter(self._get_filters)
         self.autofocus_service.set_character_rule_getter(self._is_character_autofocus_enabled)
+        self.autofocus_service.set_mp_clipboard_enabled_getter(lambda: self.config_data.copy_mp_sender)
 
         self._char_order: list[GameWindow] = []
         self._asset_cache = self._load_assets()
@@ -130,6 +131,14 @@ class WebviewController:
         return {
             'config': self._serialize_config(),
             'windows': self._serialize_windows(windows),
+            'autofocusState': self._serialize_autofocus_state(include_logs=False),
+        }
+
+    def set_copy_mp_sender(self, enabled: bool) -> dict[str, object]:
+        self.config_data.copy_mp_sender = enabled
+        save_config(self.config_data)
+        return {
+            'config': self._serialize_config(),
             'autofocusState': self._serialize_autofocus_state(include_logs=False),
         }
 
@@ -401,6 +410,7 @@ class WebviewController:
         return {
             'enableRetro': self.config_data.enable_retro,
             'enableUnity': self.config_data.enable_unity,
+            'copyMpSender': self.config_data.copy_mp_sender,
             'shortcuts': {
                 'next': self.config_data.shortcut_next,
                 'prev': self.config_data.shortcut_prev,
@@ -528,4 +538,6 @@ class WebviewController:
                 'on': as_data_url(on_path),
             }
         return assets
+
+
 
