@@ -16,6 +16,7 @@
         <button class="nav-link is-active" data-view="characters" title="Affiche les personnages detectes et leurs options de focus.">Personnages</button>
         <button class="nav-link" data-view="shortcuts" title="Configure les raccourcis globaux clavier et souris.">Raccourcis</button>
         <button class="nav-link" data-view="links" title="Affiche et organise vos liens utiles par dossier.">Liens utiles</button>
+        <button class="nav-link" data-view="crafts" title="Compare le cout de craft au prix de vente en hotel de vente.">Calculette craft</button>
         <button class="nav-link" data-view="info" title="Affiche la version et les informations legales de l'application.">Info</button>
       </nav>
     </aside>
@@ -29,6 +30,11 @@
         <div class="header-actions">
           <div id="status-pill" class="status-pill">Initialisation...</div>
           <button id="add-link-group-btn" class="primary-btn header-link-btn hidden" title="Cree un nouveau dossier pour classer vos liens.">Nouveau dossier</button>
+          <div id="craft-header-actions" class="header-inline-actions hidden">
+            <button id="expand-all-crafts-btn" class="ghost-btn ghost-btn-small" title="Ouvre tous les crafts de la liste.">Tout ouvrir</button>
+            <button id="collapse-all-crafts-btn" class="ghost-btn ghost-btn-small" title="Masque tous les crafts de la liste.">Tout masquer</button>
+            <button id="add-craft-header-btn" class="primary-btn header-link-btn" title="Ajoute un nouveau craft a suivre.">Nouveau craft</button>
+          </div>
         </div>
       </header>
 
@@ -73,6 +79,11 @@
         </div>
       </section>
 
+      <section class="view" data-view="crafts">
+        <div id="craft-form-slot"></div>
+        <div id="crafts-list" class="crafts-stack"></div>
+      </section>
+
       <section class="view" data-view="info">
         <div class="panel info-panel">
           <h3>Application</h3>
@@ -83,9 +94,16 @@
     </main>
   </div>
 
+    <script src="./js/core.js"></script>
+  <script src="./js/characters.js"></script>
+  <script src="./js/shortcuts.js"></script>
+  <script src="./js/links.js"></script>
+  <script src="./js/crafts.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
+
+
 
 
 

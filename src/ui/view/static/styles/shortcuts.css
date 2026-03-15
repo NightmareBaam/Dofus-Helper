@@ -1,0 +1,62 @@
+﻿.shortcut-rows {
+  display: grid;
+  gap: 12px;
+}
+
+.shortcut-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(10, 17, 22, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.shortcut-row.capture-active {
+  border-color: rgba(140, 188, 69, 0.32);
+  background: rgba(140, 188, 69, 0.08);
+}
+
+.shortcut-label {
+  font-weight: 700;
+}
+
+.shortcut-subtitle {
+  margin-top: 6px;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.shortcut-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shortcut-input {
+  width: 220px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 14, 18, 0.44);
+  color: var(--accent-strong);
+  text-align: center;
+}
+
+.shortcut-input::placeholder { color: var(--text-dim); }
+
+.shortcut-footer {
+  justify-content: space-between;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.inline-status {
+  min-height: 20px;
+  color: var(--text-dim);
+}
+
+.inline-status.tone-success { color: var(--ok); }
+.inline-status.tone-muted { color: var(--text-dim); }

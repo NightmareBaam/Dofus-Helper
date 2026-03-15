@@ -21,6 +21,7 @@ $iconFile = Join-Path $root 'build_icon.ico'
 $issFile = Join-Path $root 'DofusHelper.iss'
 $assetsDir = Join-Path $root 'assets'
 $staticDir = Join-Path $root 'src\ui\view\static'
+$catalogDir = Join-Path $root 'bdd_items'
 $buildRoot = Join-Path $root 'build'
 $pyInstallerWorkDir = Join-Path $buildRoot 'pyinstaller'
 $pyInstallerDistDir = Join-Path $buildRoot 'dist'
@@ -131,7 +132,7 @@ function Ensure-BuildTargetWritable {
     }
 }
 
-foreach ($path in @($sourceFile, $iconFile, $issFile, $assetsDir, $staticDir)) {
+foreach ($path in @($sourceFile, $iconFile, $issFile, $assetsDir, $staticDir, $catalogDir)) {
     if (-not (Test-Path $path)) {
         throw "Fichier introuvable: $path"
     }
@@ -162,6 +163,7 @@ if (-not $SkipExe) {
         '--icon', $iconFile,
         '--add-data', "$assetsDir;assets",
         '--add-data', "$staticDir;src\ui\view\static",
+        '--add-data', "$catalogDir;bdd_items",
         $sourceFile
     )
 
@@ -200,3 +202,4 @@ if (Test-Path $legacyRootExe) {
 
 Write-Host ''
 Write-Host "$appName build terminé." -ForegroundColor Green
+

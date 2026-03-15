@@ -226,6 +226,19 @@ class AutoFocusService:
         if pseudo is None and not unity_fallback:
             return
 
+        enable_retro, enable_unity = self._filters_getter()
+        if pseudo is None:
+            unity_windows = [
+                window
+                for window in self._window_service.list_game_windows(
+                    enable_retro=enable_retro,
+                    enable_unity=enable_unity,
+                )
+                if window.game_type == "unity"
+            ]
+            if len(unity_windows) == 1:
+                pseudo = unity_windows[0].pseudo
+
         target_label = pseudo or "Unity"
 
         if not self.is_type_enabled(notif_type):
@@ -241,7 +254,6 @@ class AutoFocusService:
         self._stats_fn(dict(self._stats))
         self._log_fn(f"[{notif_type.upper()}] {target_label} -> {body}", f"type_{notif_type}")
 
-        enable_retro, enable_unity = self._filters_getter()
         if pseudo:
             ok, detail = self._window_service.focus_pseudo(
                 pseudo,

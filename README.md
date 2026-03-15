@@ -90,6 +90,17 @@ Cet onglet permet de :
 
 Par défaut, l'application inclut déjà quelques liens utiles pour Dofus Unity et Dofus Retro.
 
+### Calculette Craft
+
+![Vue Calculette Craft 1](assets/readme/calculette_exemple_1.png)
+![Vue Calculette Craft 2](assets/readme/calculette_exemple_2.png)
+
+Permet de faire se une liste d'items retro / unity, mettre les ressources que l'on a en stock, le prix a l'unité et calculer s'il est plus intéressant d'acheter les ressources ou les crafter.
+
+Peut aussi être utilisé pour regarder les recettes d'un item. 
+
+L'application redirige vers **Solomonk** ou **Dofus Book** pour voir l'item ou la panoplie.
+
 ---
 
 ## Installation

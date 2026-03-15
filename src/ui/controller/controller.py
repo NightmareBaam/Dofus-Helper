@@ -10,6 +10,7 @@ from uuid import uuid4
 from src.ui.controller.runtime import as_data_url
 from src.domain.config import load_config, save_config
 from src.domain.constants import APP_LEGAL, APP_NAME, APP_VERSION, ASSETS_DIR, AUTOFOCUS_TYPES, LOGO_PATH
+from src.domain.craft_catalog import CraftCatalog, CraftCatalogItem
 from src.domain.models import AppConfig, GameWindow
 from src.domain.fonctionnalites.autofocus_service import AutoFocusService
 from src.domain.fonctionnalites.hotkey_service import KEYBOARD_OK, MOUSE_OK, HotkeyService, normalize_shortcut
@@ -23,6 +24,7 @@ class WebviewController:
         self.config_data: AppConfig = load_config()
         self.window_service = WindowService()
         self.window_service.start_focus_tracking()
+        self.craft_catalog = CraftCatalog()
         self.hotkey_service = HotkeyService()
         self.autofocus_service = AutoFocusService(
             self.window_service,
@@ -49,6 +51,7 @@ class WebviewController:
             'focus': '0',
             'last': '-',
         }
+        self._pending_windows: list[dict[str, object]] | None = None
 
         self._log_dependency_warnings()
         self._apply_shortcuts(silent=True)
@@ -68,6 +71,8 @@ class WebviewController:
             'version': APP_VERSION,
             'legal': APP_LEGAL,
             'links': self._serialize_links(),
+            'crafts': self._serialize_crafts(),
+            'craftCatalogState': self._serialize_craft_catalog_state(),
             'assets': self._asset_cache,
             'config': self._serialize_config(),
             'windows': self._serialize_windows(self.refresh_windows()),
@@ -82,11 +87,14 @@ class WebviewController:
             autofocus_logs = [event for event in self._autofocus_logs if int(event['id']) > autofocus_log_id]
             autofocus_state = self._serialize_autofocus_state_locked(include_logs=False)
             shortcuts_state = self._serialize_shortcuts_state_locked()
+            windows = self._pending_windows
+            self._pending_windows = None
         return {
             'shortcutEvents': shortcut_events,
             'autofocusLogs': autofocus_logs,
             'autofocusState': autofocus_state,
             'shortcutsState': shortcuts_state,
+            'windows': windows,
         }
 
     def refresh_windows(self) -> list[GameWindow]:
@@ -99,9 +107,10 @@ class WebviewController:
 
         rules_changed = False
         for window in self._char_order:
-            if window.pseudo not in self.config_data.autofocus_rules:
-                rules_changed = True
+            previous_rule = dict(self.config_data.autofocus_rules.get(window.pseudo, {}))
             self.config_data.ensure_autofocus_rule(window.pseudo)
+            if previous_rule != self.config_data.autofocus_rules.get(window.pseudo, {}):
+                rules_changed = True
         if rules_changed:
             save_config(self.config_data)
 
@@ -112,13 +121,13 @@ class WebviewController:
         return {'ok': ok, 'message': message}
 
     def cycle(self, direction: int) -> dict[str, object]:
-        self._ensure_characters()
-        ok, message = self.window_service.cycle(direction, self._char_order)
+        windows = self._managed_characters()
+        ok, message = self.window_service.cycle(direction, windows)
         return {'ok': ok, 'message': message}
 
     def focus_last(self) -> dict[str, object]:
-        self._ensure_characters()
-        ok, message = self.window_service.focus_last(self._char_order)
+        windows = self._managed_characters()
+        ok, message = self.window_service.focus_last(windows)
         return {'ok': ok, 'message': message}
 
     def set_game_filter(self, game_type: str, enabled: bool) -> dict[str, object]:
@@ -145,6 +154,12 @@ class WebviewController:
     def set_character_rule(self, pseudo: str, notif_type: str, enabled: bool) -> dict[str, object]:
         rule = self.config_data.ensure_autofocus_rule(pseudo)
         rule[notif_type] = enabled
+        save_config(self.config_data)
+        return {'ok': True, 'rule': dict(rule)}
+
+    def set_character_rotation(self, pseudo: str, enabled: bool) -> dict[str, object]:
+        rule = self.config_data.ensure_autofocus_rule(pseudo)
+        rule['rotation'] = enabled
         save_config(self.config_data)
         return {'ok': True, 'rule': dict(rule)}
 
@@ -176,6 +191,8 @@ class WebviewController:
             self.config_data.shortcut_prev = normalized
         elif action == 'last':
             self.config_data.shortcut_last = normalized
+        elif action == 'refresh':
+            self.config_data.shortcut_refresh = normalized
         save_config(self.config_data)
         return {'ok': True, 'shortcutsState': self._serialize_shortcuts_state()}
 
@@ -329,22 +346,160 @@ class WebviewController:
         webbrowser.open(url)
         return {'ok': True}
 
+    def search_craft_items(self, query: str, limit: int = 20, source_filter: str = 'all') -> dict[str, object]:
+        if not self.craft_catalog.available:
+            return {'ok': False, 'message': self.craft_catalog.load_error or 'Catalogue craft indisponible.', 'items': []}
+        safe_limit = max(1, min(25, int(limit)))
+        return {'ok': True, 'items': self.craft_catalog.search(query, safe_limit, source_filter)}
+
+    def add_craft(self, name: str, sell_price: float, target_quantity: int, item_key: str | None = None) -> dict[str, object]:
+        catalog_item = self._get_catalog_item(item_key)
+        if item_key and catalog_item is None:
+            return {'ok': False, 'message': 'Item introuvable dans la base de craft.'}
+        craft_name = catalog_item.name if catalog_item is not None else str(name).strip()
+        if not craft_name:
+            return {'ok': False, 'message': 'Nom de craft invalide.'}
+
+        craft = {
+            'id': self._new_id('craft'),
+            'name': craft_name,
+            'sell_price': max(0.0, float(sell_price)),
+            'target_quantity': max(1, int(target_quantity)),
+            'collapsed': False,
+            'resources': self.craft_catalog.build_resources(catalog_item, id_factory=self._new_id) if catalog_item is not None else [],
+        }
+        self._apply_catalog_metadata(craft, catalog_item)
+        self.config_data.crafts.append(craft)
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def update_craft(self, craft_id: str, name: str, sell_price: float, target_quantity: int, item_key: str | None = None) -> dict[str, object]:
+        craft = self._get_craft(craft_id)
+        if craft is None:
+            return {'ok': False, 'message': 'Craft introuvable.'}
+
+        catalog_item = self._get_catalog_item(item_key)
+        if item_key and catalog_item is None:
+            return {'ok': False, 'message': 'Item introuvable dans la base de craft.'}
+
+        craft_name = catalog_item.name if catalog_item is not None else str(name).strip()
+        if not craft_name:
+            return {'ok': False, 'message': 'Nom de craft invalide.'}
+
+        previous_item_key = str(craft.get('item_key') or '').strip() or None
+        craft['name'] = craft_name
+        craft['sell_price'] = max(0.0, float(sell_price))
+        craft['target_quantity'] = max(1, int(target_quantity))
+
+        if catalog_item is not None:
+            self._apply_catalog_metadata(craft, catalog_item)
+            if previous_item_key != catalog_item.key or not craft.get('resources'):
+                craft['resources'] = self.craft_catalog.build_resources(catalog_item, craft.get('resources'), id_factory=self._new_id)
+        else:
+            self._clear_catalog_metadata(craft)
+
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def set_craft_target_quantity(self, craft_id: str, target_quantity: int) -> dict[str, object]:
+        craft = self._get_craft(craft_id)
+        if craft is None:
+            return {'ok': False, 'message': 'Craft introuvable.'}
+        craft['target_quantity'] = max(1, int(target_quantity))
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def set_craft_collapsed(self, craft_id: str, collapsed: bool) -> dict[str, object]:
+        craft = self._get_craft(craft_id)
+        if craft is None:
+            return {'ok': False, 'message': 'Craft introuvable.'}
+        craft['collapsed'] = bool(collapsed)
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def set_all_crafts_collapsed(self, collapsed: bool) -> dict[str, object]:
+        for craft in self.config_data.crafts:
+            craft['collapsed'] = bool(collapsed)
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def save_craft_order(self, craft_ids: list[str]) -> dict[str, object]:
+        if not craft_ids:
+            return {'ok': False, 'message': 'Ordre de crafts invalide.'}
+        current = list(self.config_data.crafts)
+        by_id = {str(craft.get('id')): craft for craft in current}
+        ordered = [by_id[craft_id] for craft_id in craft_ids if craft_id in by_id]
+        if not ordered:
+            return {'ok': False, 'message': 'Ordre de crafts invalide.'}
+        remaining = [craft for craft in current if str(craft.get('id')) not in craft_ids]
+        self.config_data.crafts = ordered + remaining
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def delete_craft(self, craft_id: str) -> dict[str, object]:
+        index = self._get_craft_index(craft_id)
+        if index is None:
+            return {'ok': False, 'message': 'Craft introuvable.'}
+        self.config_data.crafts.pop(index)
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def add_craft_resource(self, craft_id: str, name: str, unit_price: float, quantity: int, owned_quantity: int, included: bool) -> dict[str, object]:
+        craft = self._get_craft(craft_id)
+        if craft is None:
+            return {'ok': False, 'message': 'Craft introuvable.'}
+        craft['resources'].append(
+            {
+                'id': self._new_id('resource'),
+                'name': str(name or '').strip(),
+                'unit_price': max(0.0, float(unit_price)),
+                'quantity': max(1, int(quantity)),
+                'owned_quantity': max(0, int(owned_quantity)),
+                'included': bool(included),
+            }
+        )
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def update_craft_resource(self, craft_id: str, resource_id: str, name: str, unit_price: float, quantity: int, owned_quantity: int, included: bool) -> dict[str, object]:
+        resource = self._get_craft_resource(craft_id, resource_id)
+        if resource is None:
+            return {'ok': False, 'message': 'Ressource introuvable.'}
+        resource['name'] = str(name or '').strip()
+        resource['unit_price'] = max(0.0, float(unit_price))
+        resource['quantity'] = max(1, int(quantity))
+        resource['owned_quantity'] = max(0, int(owned_quantity))
+        resource['included'] = bool(included)
+        return {'ok': True, 'crafts': self._save_crafts()}
+
+    def delete_craft_resource(self, craft_id: str, resource_id: str) -> dict[str, object]:
+        craft = self._get_craft(craft_id)
+        if craft is None:
+            return {'ok': False, 'message': 'Craft introuvable.'}
+        resources = craft['resources']
+        index = next((i for i, item in enumerate(resources) if item.get('id') == resource_id), None)
+        if index is None:
+            return {'ok': False, 'message': 'Ressource introuvable.'}
+        resources.pop(index)
+        return {'ok': True, 'crafts': self._save_crafts()}
+
     def _focus_next(self) -> None:
-        self._ensure_characters()
-        self.window_service.cycle(+1, self._char_order)
+        self.window_service.cycle(+1, self._managed_characters())
 
     def _focus_prev(self) -> None:
-        self._ensure_characters()
-        self.window_service.cycle(-1, self._char_order)
+        self.window_service.cycle(-1, self._managed_characters())
 
     def _focus_last(self) -> None:
-        self._ensure_characters()
-        self.window_service.focus_last(self._char_order)
+        self.window_service.focus_last(self._managed_characters())
+
+    def _refresh_windows_hotkey(self) -> None:
+        threading.Thread(target=self._refresh_windows_hotkey_worker, daemon=True).start()
+
+    def _refresh_windows_hotkey_worker(self) -> None:
+        try:
+            windows = self.refresh_windows()
+            self._queue_windows_update(windows)
+        except Exception as exc:
+            with self._lock:
+                self._shortcut_status = {'text': f'actualiser: {exc}', 'tone': 'danger'}
 
     def _apply_shortcuts(self, silent: bool = False) -> None:
         self.config_data.shortcut_next = normalize_shortcut(self.config_data.shortcut_next)
         self.config_data.shortcut_prev = normalize_shortcut(self.config_data.shortcut_prev)
         self.config_data.shortcut_last = normalize_shortcut(self.config_data.shortcut_last)
+        self.config_data.shortcut_refresh = normalize_shortcut(self.config_data.shortcut_refresh)
         self.hotkey_service.clear_all()
 
         active: list[str] = []
@@ -353,11 +508,13 @@ class WebviewController:
             'next': self.config_data.shortcut_next,
             'prev': self.config_data.shortcut_prev,
             'last': self.config_data.shortcut_last,
+            'refresh': self.config_data.shortcut_refresh,
         }
         callbacks = {
             'next': self._focus_next,
             'prev': self._focus_prev,
             'last': self._focus_last,
+            'refresh': self._refresh_windows_hotkey,
         }
 
         for action, shortcut in shortcuts.items():
@@ -368,7 +525,7 @@ class WebviewController:
             except Exception as exc:
                 errors.append(f'{action}: {exc}')
                 continue
-            label = {'next': 'suivant', 'prev': 'precedent', 'last': 'dernier focus'}[action]
+            label = {'next': 'suivant', 'prev': 'precedent', 'last': 'dernier focus', 'refresh': 'actualiser'}[action]
             active.append(f'[{shortcut}] {label}')
 
         save_config(self.config_data)
@@ -396,12 +553,20 @@ class WebviewController:
         if not self._char_order:
             self.refresh_windows()
 
+    def _managed_characters(self) -> list[GameWindow]:
+        self._ensure_characters()
+        return [window for window in self._char_order if self._is_character_in_rotation(window.pseudo)]
+
     def _get_filters(self) -> tuple[bool, bool]:
         return self.config_data.enable_retro, self.config_data.enable_unity
 
+    def _is_character_in_rotation(self, pseudo: str) -> bool:
+        rule = self.config_data.ensure_autofocus_rule(pseudo)
+        return rule.get('rotation', True)
+
     def _is_character_autofocus_enabled(self, pseudo: str, notif_type: str) -> bool:
         rule = self.config_data.ensure_autofocus_rule(pseudo)
-        return rule.get(notif_type, True)
+        return rule.get('rotation', True) and rule.get(notif_type, True)
 
     def _any_autofocus_type_enabled(self) -> bool:
         return any(self.autofocus_service.is_type_enabled(key) for key in AUTOFOCUS_TYPES)
@@ -415,6 +580,7 @@ class WebviewController:
                 'next': self.config_data.shortcut_next,
                 'prev': self.config_data.shortcut_prev,
                 'last': self.config_data.shortcut_last,
+                'refresh': self.config_data.shortcut_refresh,
             },
             'autofocusRules': self.config_data.autofocus_rules,
         }
@@ -425,6 +591,61 @@ class WebviewController:
     def _save_links(self) -> list[dict[str, object]]:
         save_config(self.config_data)
         return self._serialize_links()
+
+    def _serialize_craft_catalog_state(self) -> dict[str, object]:
+        return {
+            'available': self.craft_catalog.available,
+            'message': '' if self.craft_catalog.available else (self.craft_catalog.load_error or 'Catalogue craft indisponible.'),
+        }
+
+    def _serialize_crafts(self) -> list[dict[str, object]]:
+        return deepcopy(self.config_data.crafts)
+
+    def _save_crafts(self) -> list[dict[str, object]]:
+        save_config(self.config_data)
+        return self._serialize_crafts()
+
+    def _get_catalog_item(self, item_key: str | None) -> CraftCatalogItem | None:
+        normalized_key = str(item_key or '').strip() or None
+        if normalized_key is None:
+            return None
+        return self.craft_catalog.get_item(normalized_key)
+
+    def _apply_catalog_metadata(self, craft: dict[str, object], item: CraftCatalogItem | None) -> None:
+        if item is None:
+            self._clear_catalog_metadata(craft)
+            return
+        craft['item_key'] = item.key
+        craft['item_category'] = item.category
+        craft['item_source'] = item.source
+        craft['item_level'] = item.level
+        craft['item_url'] = item.url
+        craft['item_panoplie'] = item.panoplie
+        craft['item_panoplie_url'] = item.panoplie_url
+
+    def _clear_catalog_metadata(self, craft: dict[str, object]) -> None:
+        craft['item_key'] = None
+        craft['item_category'] = None
+        craft['item_source'] = None
+        craft['item_level'] = 0
+        craft['item_url'] = None
+        craft['item_panoplie'] = None
+        craft['item_panoplie_url'] = None
+
+    def _get_craft_index(self, craft_id: str) -> int | None:
+        return next((i for i, craft in enumerate(self.config_data.crafts) if craft.get('id') == craft_id), None)
+
+    def _get_craft(self, craft_id: str) -> dict[str, object] | None:
+        index = self._get_craft_index(craft_id)
+        if index is None:
+            return None
+        return self.config_data.crafts[index]
+
+    def _get_craft_resource(self, craft_id: str, resource_id: str) -> dict[str, object] | None:
+        craft = self._get_craft(craft_id)
+        if craft is None:
+            return None
+        return next((item for item in craft['resources'] if item.get('id') == resource_id), None)
 
     def _get_link_group_index(self, group_id: str) -> int | None:
         return next((i for i, group in enumerate(self.config_data.link_groups) if group.get('id') == group_id), None)
@@ -451,6 +672,7 @@ class WebviewController:
                 'next': self.config_data.shortcut_next,
                 'prev': self.config_data.shortcut_prev,
                 'last': self.config_data.shortcut_last,
+                'refresh': self.config_data.shortcut_refresh,
             },
             'status': dict(self._shortcut_status),
             'debugEnabled': self._shortcut_debug_enabled,
@@ -487,6 +709,7 @@ class WebviewController:
                     'classe': window.classe,
                     'version': window.version,
                     'rule': self.config_data.ensure_autofocus_rule(window.pseudo),
+                    'rotationEnabled': self._is_character_in_rotation(window.pseudo),
                 }
             )
         return result
@@ -520,6 +743,10 @@ class WebviewController:
         with self._lock:
             self._autofocus_stats = dict(stats)
 
+    def _queue_windows_update(self, windows: list[GameWindow]) -> None:
+        with self._lock:
+            self._pending_windows = self._serialize_windows(windows)
+
     @staticmethod
     def _new_id(prefix: str) -> str:
         return f'{prefix}-{uuid4().hex[:8]}'
@@ -538,6 +765,9 @@ class WebviewController:
                 'on': as_data_url(on_path),
             }
         return assets
+
+
+
 
 
 

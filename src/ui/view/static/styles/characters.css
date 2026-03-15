@@ -1,0 +1,125 @@
+﻿.characters-list {
+  display: grid;
+  gap: 10px;
+}
+
+.character-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(112, 154, 88, 0.12);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(31, 48, 59, 0.96), rgba(26, 40, 49, 0.96));
+  box-shadow: var(--shadow);
+  cursor: grab;
+}
+
+.character-row.dragging {
+  opacity: 0.62;
+}
+
+.character-index {
+  font-family: "Palatino Linotype", serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+}
+
+.character-main { min-width: 0; }
+
+.character-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.character-class {
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.character-mode {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.character-mode.retro { color: var(--retro); }
+.character-mode.unity { color: var(--unity); }
+
+.character-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.focus-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(11, 18, 24, 0.34);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.focus-btn:hover { background: rgba(11, 18, 24, 0.52); }
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(11, 18, 24, 0.34);
+  cursor: pointer;
+}
+
+.icon-btn img {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  object-fit: contain;
+}
+
+.icon-btn svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-btn:hover { background: rgba(11, 18, 24, 0.52); }
+
+.rotation-btn {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+.rotation-btn:hover {
+  background: rgba(140, 188, 69, 0.28);
+}
+
+.rotation-btn.is-off {
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.footer-actions {
+  justify-content: space-between;
+  margin-top: 18px;
+  color: var(--text-dim);
+  font-size: 13px;
+}

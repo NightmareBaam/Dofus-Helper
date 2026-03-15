@@ -37,6 +37,9 @@ class WebviewApi:
     def set_character_rule(self, pseudo: str, notif_type: str, enabled: bool) -> dict[str, object]:
         return self.controller.set_character_rule(pseudo, notif_type, enabled)
 
+    def set_character_rotation(self, pseudo: str, enabled: bool) -> dict[str, object]:
+        return self.controller.set_character_rotation(pseudo, enabled)
+
     def set_autofocus_type(self, notif_type: str, enabled: bool) -> dict[str, object]:
         return self.controller.set_autofocus_type(notif_type, enabled)
 
@@ -54,6 +57,39 @@ class WebviewApi:
 
     def save_order(self, hwnds: list[int]) -> dict[str, object]:
         return self.controller.save_order(hwnds)
+
+    def search_craft_items(self, query: str, limit: int = 20, source_filter: str = 'all') -> dict[str, object]:
+        return self.controller.search_craft_items(query, limit, source_filter)
+
+    def add_craft(self, name: str, sell_price: float, target_quantity: int, item_key: str | None = None) -> dict[str, object]:
+        return self.controller.add_craft(name, sell_price, target_quantity, item_key)
+
+    def update_craft(self, craft_id: str, name: str, sell_price: float, target_quantity: int, item_key: str | None = None) -> dict[str, object]:
+        return self.controller.update_craft(craft_id, name, sell_price, target_quantity, item_key)
+
+    def set_craft_target_quantity(self, craft_id: str, target_quantity: int) -> dict[str, object]:
+        return self.controller.set_craft_target_quantity(craft_id, target_quantity)
+
+    def set_craft_collapsed(self, craft_id: str, collapsed: bool) -> dict[str, object]:
+        return self.controller.set_craft_collapsed(craft_id, collapsed)
+
+    def set_all_crafts_collapsed(self, collapsed: bool) -> dict[str, object]:
+        return self.controller.set_all_crafts_collapsed(collapsed)
+
+    def save_craft_order(self, craft_ids: list[str]) -> dict[str, object]:
+        return self.controller.save_craft_order(craft_ids)
+
+    def delete_craft(self, craft_id: str) -> dict[str, object]:
+        return self.controller.delete_craft(craft_id)
+
+    def add_craft_resource(self, craft_id: str, name: str, unit_price: float, quantity: int, owned_quantity: int, included: bool) -> dict[str, object]:
+        return self.controller.add_craft_resource(craft_id, name, unit_price, quantity, owned_quantity, included)
+
+    def update_craft_resource(self, craft_id: str, resource_id: str, name: str, unit_price: float, quantity: int, owned_quantity: int, included: bool) -> dict[str, object]:
+        return self.controller.update_craft_resource(craft_id, resource_id, name, unit_price, quantity, owned_quantity, included)
+
+    def delete_craft_resource(self, craft_id: str, resource_id: str) -> dict[str, object]:
+        return self.controller.delete_craft_resource(craft_id, resource_id)
 
     def add_link_group(self, name: str) -> dict[str, object]:
         return self.controller.add_link_group(name)
@@ -93,5 +129,4 @@ class WebviewApi:
 
     def shutdown(self) -> None:
         self.controller.shutdown()
-
 
