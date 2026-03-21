@@ -1,0 +1,32 @@
+{
+  "enableRetro": true,
+  "enableUnity": true,
+  "copyMpSender": true,
+  "order": [
+    920878,
+    2819474
+  ],
+  "rules": {
+    "Testeur": {
+      "combat": true,
+      "echange": true,
+      "groupe": true,
+      "mp": true,
+      "rotation": true
+    },
+    "Floor-islava": {
+      "combat": true,
+      "echange": true,
+      "groupe": true,
+      "mp": true,
+      "rotation": true
+    },
+    "Agatheonix": {
+      "combat": true,
+      "echange": true,
+      "groupe": true,
+      "mp": true,
+      "rotation": true
+    }
+  }
+}

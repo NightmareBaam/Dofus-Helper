@@ -1,0 +1,38 @@
+{
+  "name": "dofus-helper",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:frontend": "vite",
+    "dev:backend": "node scripts/backend-dev.mjs",
+    "build:notifications-helper": "node scripts/build-notifications-helper.mjs",
+    "prepare:notifications-helper": "node scripts/prepare-notifications-helper.mjs",
+    "build:frontend": "vue-tsc --noEmit && vite build",
+    "build:backend": "node ./node_modules/typescript/bin/tsc -p backend/tsconfig.json",
+    "build:sidecar": "node scripts/prepare-sidecar.mjs",
+    "build": "npm run build:frontend && npm run build:backend && npm run prepare:notifications-helper && npm run build:sidecar",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@hugeicons/core-free-icons": "^4.0.0",
+    "@hugeicons/vue": "^1.0.5",
+    "@tailwindcss/vite": "^4.2.1",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-shell": "^2.3.5",
+    "koffi": "^2.15.2",
+    "tailwindcss": "^4.2.1",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.10.1",
+    "@types/node": "^25.5.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3",
+    "vue-tsc": "^2.1.10"
+  }
+}

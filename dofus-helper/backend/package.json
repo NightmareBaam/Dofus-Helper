@@ -1,0 +1,10 @@
+{
+  "name": "dofus-helper-backend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node ../node_modules/typescript/bin/tsc -p tsconfig.json",
+    "start": "node dist/server.js"
+  }
+}

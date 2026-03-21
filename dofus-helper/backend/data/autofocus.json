@@ -1,0 +1,9 @@
+{
+  "debugEnabled": false,
+  "enabledTypes": {
+    "combat": true,
+    "echange": true,
+    "groupe": true,
+    "mp": true
+  }
+}

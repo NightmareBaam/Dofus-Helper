@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Dofus Helper",
+  "version": "0.1.0",
+  "identifier": "com.nightmare.baam.dofus.helper",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Dofus Helper",
+        "width": 1300,
+        "height": 800,
+        "minWidth": 1300,
+        "minHeight": 800
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "externalBin": [
+      "binaries/backend"
+    ],
+    "resources": [
+      "../backend/dist/**/*",
+      "../node_modules/koffi/package.json",
+      "../node_modules/koffi/index.js",
+      "../node_modules/koffi/indirect.js",
+      "../node_modules/koffi/build/koffi/win32_x64/koffi.node",
+      "resources/**/*",
+      "../../bdd_items/**/*",
+      "../../assets/familier_retro/**/*"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

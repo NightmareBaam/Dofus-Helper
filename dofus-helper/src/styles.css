@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+:root {
+  color: #f5f0e3;
+  background: #071117;
+  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --bg: #091219;
+  --bg-soft: #0f1b24;
+  --surface: #13222d;
+  --panel: #1a2b36;
+  --panel-soft: #20333f;
+  --card: #243946;
+  --card-hover: #2a4250;
+  --border: #304754;
+  --border-soft: rgba(120, 163, 96, 0.14);
+  --text: #eef4eb;
+  --text-dim: #9db1a5;
+  --accent: #8cbc45;
+  --accent-strong: #dff2a9;
+  --accent-soft: rgba(140, 188, 69, 0.16);
+  --retro: #9de164;
+  --unity: #6eb5e6;
+  --danger: #0b0a0a;
+  --warn: #e2bf76;
+  --info: #8db9ff;
+  --ok: #9de164;
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background: #071117;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(7, 17, 23, 0.72);
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  border: 2px solid rgba(7, 17, 23, 0.72);
+  background: rgba(120, 140, 146, 0.5);
+}
+
+.primary-btn {
+  @apply border-0 rounded-xl px-4 py-3 cursor-pointer transition-all duration-150 ease-in-out;
+}
+
+.primary-btn {
+  @apply text-[#14202a] font-extrabold;
+  background: linear-gradient(135deg, #b6d867, var(--accent));
+  box-shadow: 0 10px 20px rgba(140, 188, 69, 0.16);
+}
+
+.secondary-btn {
+  @apply border rounded-xl px-4 py-3 cursor-pointer transition-all duration-150 ease-in-out text-[#e8efe9] font-semibold;
+  border-color: rgba(114, 160, 82, 0.34);
+  background: linear-gradient(135deg, rgba(46, 67, 39, 0.96), rgba(30, 45, 37, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(167, 210, 70, 0.06);
+}
+
+.secondary-btn:hover {
+  border-color: rgba(145, 192, 99, 0.48);
+  background: linear-gradient(135deg, rgba(56, 81, 46, 0.98), rgba(36, 54, 43, 0.98));
+}
+
+.character-index {
+  font-family: "Palatino Linotype";
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+}
+
+.toggle input { accent-color: var(--accent); }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.toolbar {
+  flex-wrap: wrap;
+}
+
+.toolbar-spacer { flex: 1; }
+
+.background {
+  background:
+    radial-gradient(circle at top left, rgba(116, 166, 74, 0.18), transparent 26%),
+    linear-gradient(180deg, #0e1921 0%, var(--bg) 100%);
+}
+
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(11, 18, 24, 0.34);
+  cursor: pointer;
+}
+
+.icon-btn img {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  object-fit: contain;
+}
+
+.icon-btn svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon-btn:hover { background: rgba(11, 18, 24, 0.52); }

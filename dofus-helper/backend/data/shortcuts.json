@@ -1,0 +1,9 @@
+{
+  "values": {
+    "next": "mouse:x2",
+    "prev": "mouse:x1",
+    "last": "ctrl+down",
+    "refresh": "²"
+  },
+  "debugEnabled": false
+}
