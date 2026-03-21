@@ -7,6 +7,9 @@ L'ancien périmètre Python a été archivé dans `python.old/`.
 
 Ce projet est un fork de Dracoon : [GitHub](https://github.com/Slyss42/Dracoon), [Twitter / X](https://x.com/Slyss42). Je vous invite à suivre son contenu !
 
+> [!IMPORTANT]
+> Ce répo Github est le seul endroit où l'application est disponible. Aucun site n'existe et n'existera. Avant de télécharger vérifier bien que vous êtes sur le bon répo.
+
 ## Structure
 
 - `dofus-helper/` : application active
