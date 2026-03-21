@@ -12,7 +12,51 @@ function collectModifiers(event: KeyboardEvent | MouseEvent): string[] {
   return modifiers;
 }
 
-function normalizeKeyName(rawKey: string): string | null {
+function normalizeKeyName(event: KeyboardEvent): string | null {
+  const codeAliases: Record<string, string> = {
+    Digit1: "&",
+    Digit2: "é",
+    Digit3: "\"",
+    Digit4: "'",
+    Digit5: "(",
+    Digit6: "-",
+    Digit7: "è",
+    Digit8: "_",
+    Digit9: "ç",
+    Digit0: "à",
+    Minus: ")",
+    Equal: "=",
+    Backquote: "²",
+    BracketLeft: "^",
+    BracketRight: "$",
+    Backslash: "*",
+    Quote: "ù",
+    IntlBackslash: "<",
+    Comma: ",",
+    Period: ";",
+    Slash: ":",
+    Numpad0: "numpad0",
+    Numpad1: "numpad1",
+    Numpad2: "numpad2",
+    Numpad3: "numpad3",
+    Numpad4: "numpad4",
+    Numpad5: "numpad5",
+    Numpad6: "numpad6",
+    Numpad7: "numpad7",
+    Numpad8: "numpad8",
+    Numpad9: "numpad9",
+    NumpadDecimal: "numpaddecimal",
+    NumpadDivide: "numpaddivide",
+    NumpadMultiply: "numpadmultiply",
+    NumpadSubtract: "numpadsubtract",
+    NumpadAdd: "numpadadd",
+    NumpadEnter: "enter",
+  };
+  if (codeAliases[event.code]) {
+    return codeAliases[event.code];
+  }
+
+  const rawKey = event.key;
   const aliases: Record<string, string> = {
     ArrowLeft: "left",
     ArrowRight: "right",
@@ -29,6 +73,7 @@ function normalizeKeyName(rawKey: string): string | null {
     PageUp: "pageup",
     PageDown: "pagedown",
     Insert: "insert",
+    Dead: "^",
   };
   if (aliases[rawKey]) {
     return aliases[rawKey];
@@ -44,7 +89,7 @@ function normalizeKeyName(rawKey: string): string | null {
 }
 
 export function shortcutFromKeyboardEvent(event: KeyboardEvent): string | null {
-  const key = normalizeKeyName(event.key);
+  const key = normalizeKeyName(event);
   if (!key) {
     return null;
   }

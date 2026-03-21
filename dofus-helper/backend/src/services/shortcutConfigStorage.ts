@@ -7,6 +7,7 @@ export interface ShortcutValues {
   prev: string | null;
   last: string | null;
   refresh: string | null;
+  helper: string | null;
 }
 
 export interface ShortcutStatus {
@@ -24,6 +25,7 @@ const DEFAULT_VALUES: ShortcutValues = {
   prev: "ctrl+left",
   last: "ctrl+down",
   refresh: null,
+  helper: null,
 };
 
 function resolveStorageFilePath(): string {
@@ -49,6 +51,7 @@ function normalizeConfig(value: unknown): ShortcutsConfig {
       prev: normalizeOptionalShortcut(values.prev ?? DEFAULT_VALUES.prev),
       last: normalizeOptionalShortcut(values.last ?? DEFAULT_VALUES.last),
       refresh: normalizeOptionalShortcut(values.refresh ?? DEFAULT_VALUES.refresh),
+      helper: normalizeOptionalShortcut(values.helper ?? DEFAULT_VALUES.helper),
     },
     debugEnabled: candidate.debugEnabled === true,
   };

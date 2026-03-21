@@ -17,10 +17,11 @@ const shortcutMeta: Record<ShortcutAction, { title: string; subtitle: string }> 
   prev: { title: "Fenetre precedente", subtitle: "Revient au personnage precedent dans la rotation." },
   last: { title: "Dernier focus", subtitle: "Revient sur la derniere fenetre Dofus active." },
   refresh: { title: "Actualiser les fenetres", subtitle: "Relance la detection des fenetres du jeu." },
+  helper: { title: "Focus Dofus Helper", subtitle: "Ramene la fenetre de l'application au premier plan." },
 };
 
 const shortcutsState = ref<ShortcutsState>({
-  values: { next: null, prev: null, last: null, refresh: null },
+  values: { next: null, prev: null, last: null, refresh: null, helper: null },
   status: { text: "", tone: "muted" },
   debugEnabled: false,
   keyboardAvailable: false,

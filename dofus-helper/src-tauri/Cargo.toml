@@ -1,9 +1,9 @@
 [package]
-name = "Dofus Helper"
+name = "dofus-helper"
 version = "1.0.0"
 description = "Dofus Helper est une application dédié aux joueurs de Dofus Retro ou Unity dans le but de leur faciliter le quotidien"
 authors = ["Nightmare Baam"]
-edition = "2026"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -65,6 +65,20 @@ export async function listVisibleWindows(): Promise<RawWindowInfo[]> {
   return windows;
 }
 
+export async function focusWindowByTitle(title: string): Promise<{ ok: boolean; message: string }> {
+  const normalizedTitle = String(title ?? "").trim().toLowerCase();
+  if (!normalizedTitle) {
+    return { ok: false, message: "Titre de fenetre invalide." };
+  }
+
+  const windows = await listVisibleWindows();
+  const target = windows.find((window) => window.title.trim().toLowerCase() === normalizedTitle);
+  if (!target) {
+    return { ok: false, message: `Fenetre introuvable: ${title}.` };
+  }
+  return focusWindow(target.hwnd);
+}
+
 export async function getForegroundWindow(): Promise<number | null> {
   try {
     const hwnd = normalizeHandle(GetForegroundWindowFn());

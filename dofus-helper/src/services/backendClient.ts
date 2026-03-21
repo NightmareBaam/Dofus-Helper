@@ -1,5 +1,5 @@
 export type CharacterNotifType = "combat" | "echange" | "groupe" | "mp";
-export type ShortcutAction = "next" | "prev" | "last" | "refresh";
+export type ShortcutAction = "next" | "prev" | "last" | "refresh" | "helper";
 
 export interface CharacterRule {
   combat: boolean;

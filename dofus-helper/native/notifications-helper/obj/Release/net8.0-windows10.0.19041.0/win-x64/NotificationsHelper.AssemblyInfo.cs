@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NotificationReader")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1333b34b759b852700e6bae15407dfa4243b62b8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9924a940d5d88f5465aae4cdd44d32525ebcafc3")]
 [assembly: System.Reflection.AssemblyProductAttribute("NotificationReader")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NotificationReader")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
